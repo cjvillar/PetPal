@@ -64,13 +64,21 @@ This project will demonstrate use of the FARM stack
 ### Database Setup
 1. Navigate to the database directory:
     ```bash
-    cd ../database
+    cd ../backend
     ```
 
 2. Start the MongoDB container using Docker:
     ```bash
     docker-compose up -d
     ```
+
+Example data using MongoDB shell (Mongodb for vscodee extension):
+run the code in:
+```bash
+playground-1.mongodb.js
+```
+
+
 
 ## Usage
 1. Ensure the backend server, frontend server, and MongoDB container are running.
