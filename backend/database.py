@@ -1,9 +1,8 @@
-# database.py
 import os
 from dotenv import load_dotenv
-import motor.motor_asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 
-# load vars from .env
+# env variables from .env
 load_dotenv()
 
 # MongoDB credentials from .env
@@ -16,12 +15,32 @@ mongo_db = os.getenv("MONGO_DB")
 # MongoDB URL
 mongodb_url = f"mongodb://{mongo_user}:{mongo_pw}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
 
-# MongoDB client 
-client = motor.motor_asyncio.AsyncIOMotorClient(mongodb_url)
-db = client.get_database(mongo_db)
 
-#user collection
-users_collection = db.get_collection("users")
+class MongoDB:
+    def __init__(self, uri: str, db_name: str):
+        self._uri = uri
+        self._db_name = db_name
+        self.client = None
+        self.db = None
+        self.users_collection = None
+
+    async def connect(self):
+        self.client = AsyncIOMotorClient(self._uri)
+        self.db = self.client[self._db_name]
+        self.users_collection = self.db.get_collection("users")
+        print("Connected to MongoDB")
+
+    async def close(self):
+        if self.client:
+            self.client.close()
+            print("MongoDB connection closed")
 
 
+# create Mongo instance
+mongo_instance = MongoDB(mongodb_url, mongo_db)
 
+# get the users collection
+async def get_users_collection():
+    if not mongo_instance.client:
+        await mongo_instance.connect()
+    return mongo_instance.users_collection
