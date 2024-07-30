@@ -1,4 +1,4 @@
-const database = 'PETPAL';
+const database = 'PetPal';
 const collectionName = 'users';
 
 use(database);
