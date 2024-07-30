@@ -18,14 +18,14 @@ This project will demonstrate use of the FARM stack
 ## Installation
 
 ### Prerequisites
-- Docker
+- Docker (MongoDb Image)
 - Node.js
 - Python 3.8+
 
 ### Backend Setup
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/petpal.git
+    git clone https://github.com/cjvillar/PetPal.git
     cd PetPal/backend
     ```
 
@@ -42,10 +42,16 @@ This project will demonstrate use of the FARM stack
 
 4. Start the FastAPI server:
     ```bash
+    fastapi dev main.py
+    or
     uvicorn main:app --reload
     ```
+    API docs:
+    ```bash
+    http://127.0.0.1:8000/api/docs
+    ```
 
-### Frontend Setup
+### Frontend Setup (TBD)
 1. Navigate to the frontend directory:
     ```bash
     cd ../frontend
@@ -72,17 +78,9 @@ This project will demonstrate use of the FARM stack
     docker-compose up -d
     ```
 
-Example data using MongoDB shell (Mongodb for vscodee extension):
-run the code in:
-```bash
-playground-1.mongodb.js
-```
-
-
-
-## Usage
+## Usage (TBD)
 1. Ensure the backend server, frontend server, and MongoDB container are running.
-2. Open your browser and navigate to `http://localhost:3000` to access the PetPal application.
+2. Open your browser and navigate to `http://127.0.0.1:8000/` to access the PetPal application.
 3. Register a new account or log in with an existing account.
 4. Start listing pets or search for available petsitters/walkers.
 
