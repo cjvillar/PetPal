@@ -39,7 +39,7 @@ class MongoDB:
 # create Mongo instance
 mongo_instance = MongoDB(mongodb_url, mongo_db)
 
-# get the users collection
+#dependencies
 async def get_users_collection():
     if not mongo_instance.client:
         await mongo_instance.connect()
