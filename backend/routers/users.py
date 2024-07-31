@@ -2,24 +2,40 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional
 from uuid import UUID, uuid4
 from bson import Binary
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field, model_validator
+
 from backend.database import get_users_collection, get_pets_collection
 
 router = APIRouter()
 
-# Pydantic models for data validation
+
 class User(BaseModel):
     user_id: UUID
     user: str
-    email: str
+    email: EmailStr
+    sitter: bool = Field(default=False)
+    need_sitter: bool = Field(default=False)
     pet: Optional[str] = None
+
+    @model_validator(mode='after')
+    def check_sitter_flags(cls, values):
+        if values.sitter and values.need_sitter:
+            raise ValueError('Only one of sitter or need_sitter can be true')
+        return values
 
 
 class UserCreate(BaseModel):
     user: str
-    email: str
+    email: EmailStr
+    sitter: bool = Field(default=False)
+    need_sitter: bool = Field(default=False)
     pet: Optional[str] = None
 
+    @model_validator(mode='after')
+    def check_sitter_flags(cls, values):
+        if values.sitter and values.need_sitter:
+            raise ValueError('Only one of sitter or need_sitter can be true')
+        return values
 
 # create user
 @router.post(
@@ -40,6 +56,8 @@ async def create_user(
             "_id": Binary.from_uuid(user_id),  # convert UUID to BSON Binary
             "user": user.user,
             "email": user.email,
+            "sitter": user.sitter,
+            "need_sitter": user.need_sitter,
             "pet": user.pet or None,
         }
         result = await users_collection.insert_one(new_user)
@@ -58,6 +76,8 @@ async def create_user(
             "user_id": user_id,
             "user": user.user,
             "email": user.email,
+            "sitter": user.sitter,
+            "need_sitter": user.need_sitter,
             "pet": user.pet,
         }
     except Exception as e:
@@ -117,14 +137,17 @@ async def get_users(users_collection=Depends(get_users_collection)):
         users_cursor = users_collection.find()
         users = await users_cursor.to_list(length=None)
 
-        # list all users
+        if not users:
+            raise HTTPException(status_code=404, detail="No users found")
+
+        # convert BSON Binary to UUID and map _id to user_id
         for user in users:
             user["user_id"] = UUID(bytes=user["_id"])
             user.pop("_id")
 
-        if not users:
-            raise HTTPException(status_code=404, detail="No users found")
         return users
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
