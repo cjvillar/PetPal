@@ -28,6 +28,7 @@ class MongoDB:
         self.client = AsyncIOMotorClient(self._uri)
         self.db = self.client[self._db_name]
         self.users_collection = self.db.get_collection("users")
+        self.pets_collection = self.db.get_collection("pets")
         print("Connected to MongoDB")
 
     async def close(self):
@@ -39,8 +40,14 @@ class MongoDB:
 # create Mongo instance
 mongo_instance = MongoDB(mongodb_url, mongo_db)
 
-#dependencies
+# dependencies
 async def get_users_collection():
     if not mongo_instance.client:
         await mongo_instance.connect()
     return mongo_instance.users_collection
+
+
+async def get_pets_collection():
+    if not mongo_instance.client:
+        await mongo_instance.connect()
+    return mongo_instance.pets_collection

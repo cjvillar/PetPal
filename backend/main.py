@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from backend.database import mongo_instance
-from backend.routers import users
+from backend.routers import users, pets
 
 app = FastAPI(
     docs_url="/api/docs", redoc_url="/api/redoc", openapi_url="/api/openapi.json"
 )
 app.include_router(users.router)
+app.include_router(pets.router)
 
 
 @app.on_event("startup")
